@@ -1,10 +1,7 @@
 import re, os
-import subprocess
-import sys
-print(sys.executable)
-import subprocess
-subprocess.call('pip install geopandas -t /tmp/ --no-cache-dir'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-sys.path.insert(1, '/tmp/')
+# import subprocess
+# import sys
+# print(sys.executable)
 # def install(package):
 #     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 # package_list = ['geopandas','pandas','shapely']
