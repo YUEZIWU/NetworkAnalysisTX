@@ -5,7 +5,7 @@ from shapely.geometry import Point
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[0:500]
+file_names = file_names[0:5]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -25,6 +25,7 @@ for i, name in enumerate(file_names):
     sub_grid_list = os.listdir(os.path.join(data_folder_path, name))
     cate = cate_file[(cate_file['ward'].str.lower()==ward.lower())&
                      (cate_file['county'].str.lower()==county.lower())].area_type.values[0]
+    print(cate)
     for sub_grid in sub_grid_list:
         try:
             mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
