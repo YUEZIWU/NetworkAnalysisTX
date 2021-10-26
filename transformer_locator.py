@@ -1,16 +1,19 @@
+import re, os
 import subprocess
 import sys
 print(sys.executable)
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-package_list = ['geopandas','pandas','shapely']
-for package in package_list:
-    install(package)
+import subprocess
+subprocess.call('pip install geopandas -t /tmp/ --no-cache-dir'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+sys.path.insert(1, '/tmp/')
+# def install(package):
+#     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+# package_list = ['geopandas','pandas','shapely']
+# for package in package_list:
+#     install(package)
 
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
-import re, os
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
