@@ -5,7 +5,7 @@ from shapely.geometry import Point
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[0:5]
+file_names = file_names[0:500]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -17,15 +17,17 @@ cate_file = pd.read_csv('wards_summary_mvlv_w_area_type.csv')
 
 tx_locations_geodf = gpd.GeoDataFrame()
 for i, name in enumerate(file_names):
-    if i%10 ==0:
+    if i%50 ==0:
         print(i)
     pts_results = gpd.GeoDataFrame()
     ward = re.split(r'_', name)[0]
     county = re.split(r'_', name)[1]
     sub_grid_list = os.listdir(os.path.join(data_folder_path, name))
-    cate = cate_file[(cate_file['ward'].str.lower()==ward.lower())&
-                     (cate_file['county'].str.lower()==county.lower())].area_type.values[0]
-    print(cate)
+    if len(cate_file[(cate_file['ward'].str.lower()==ward.lower())&(cate_file['county'].str.lower()==county.lower())])>0:
+        cate = cate_file[(cate_file['ward'].str.lower()==ward.lower())&
+                         (cate_file['county'].str.lower()==county.lower())].area_type.values[0]
+    else:
+        cate = None
     for sub_grid in sub_grid_list:
         try:
             mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
