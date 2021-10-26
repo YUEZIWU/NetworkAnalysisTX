@@ -23,8 +23,11 @@ for i, name in enumerate(file_names):
     ward = re.split(r'_', name)[0]
     county = re.split(r'_', name)[1]
     sub_grid_list = os.listdir(os.path.join(data_folder_path, name))
-    cate = cate_file[(cate_file['ward'].str.lower()==ward.lower())&
-                     (cate_file['county'].str.lower()==county.lower())].area_type.values[0]
+    if len(cate_file[(cate_file['ward'].str.lower()==ward.lower())&(cate_file['county'].str.lower()==county.lower())])>0:
+        cate = cate_file[(cate_file['ward'].str.lower()==ward.lower())&
+                         (cate_file['county'].str.lower()==county.lower())].area_type.values[0]
+    else:
+        cate = None
     for sub_grid in sub_grid_list:
         try:
             mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
