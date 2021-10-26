@@ -1,21 +1,11 @@
 import re, os
-# import subprocess
-# import sys
-# print(sys.executable)
-# def install(package):
-#     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-# package_list = ['geopandas','pandas','shapely']
-# for package in package_list:
-#     install(package)
-
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-# for test first, test firt 20 wards
-file_names = file_names[0:20]
+file_names = file_names[500:1000]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -33,8 +23,8 @@ for i, name in enumerate(file_names):
     ward = re.split(r'_', name)[0]
     county = re.split(r'_', name)[1]
     sub_grid_list = os.listdir(os.path.join(data_folder_path, name))
-    cate = cate_file.loc[(cate_file['ward'].str.lower()==ward.lower())&
-                         (cate_file['county'].str.lower()==county.lower()), 'area_type'].to_string()
+    cate = cate_file[(cate_file['ward'].str.lower()==ward.lower())&
+                     (cate_file['county'].str.lower()==county.lower())].area_type.values[0]
     for sub_grid in sub_grid_list:
         try:
             mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
@@ -55,5 +45,5 @@ for i, name in enumerate(file_names):
     pts_results.index = range(len(pts_results))
     tx_locations_geodf = tx_locations_geodf.append(pts_results)
 
-tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations.gpkg"), driver="GPKG")
-tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations.shp"))
+tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_1.gpkg"), driver="GPKG")
+#tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations.shp"))
