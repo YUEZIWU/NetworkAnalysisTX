@@ -17,7 +17,7 @@ cate_file = pd.read_csv('wards_summary_mvlv_w_area_type.csv')
 
 tx_locations_geodf = gpd.GeoDataFrame()
 for i, name in enumerate(file_names):
-    if i%10 ==0:
+    if i%50 ==0:
         print(i)
     pts_results = gpd.GeoDataFrame()
     ward = re.split(r'_', name)[0]
