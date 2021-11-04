@@ -1,6 +1,7 @@
 import re, os
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 from shapely.geometry import Point
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
