@@ -6,7 +6,7 @@ from shapely.geometry import Point
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[0:500]
+file_names = file_names[0:50]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -55,11 +55,16 @@ for i, name in enumerate(file_names):
             result['area_cate'] = str(cate)
             pts_results = pts_results.append(result)
         except:
-            print('no transformer found: ', name, sub_grid)
+            print('no transformer found: ', i, name, sub_grid)
+            sub_grid_files = os.listdir(os.path.join(data_folder_path, name, sub_grid))
+            print('sub_grid_files:', sub_grid_files)
+            mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
+            sub_grid_cons = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, "{}.shp".format(sub_grid)))
+            print('mvs, sub_cons', len(mvs), len(sub_cons))
             pass
     pts_results.index = range(len(pts_results))
     tx_locations_geodf = tx_locations_geodf.append(pts_results)
 
 tx_locations_geodf.crs = {'init' :'epsg:4326'}
-tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_0.gpkg"), driver="GPKG")
+tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_50_t1.gpkg"), driver="GPKG")
 #tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations.shp"))
