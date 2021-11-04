@@ -6,7 +6,7 @@ from shapely.geometry import Point
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[0:500]
+file_names = file_names #[0:500]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -63,6 +63,6 @@ for i, name in enumerate(file_names):
     pts_results.index = range(len(pts_results))
     tx_locations_geodf = tx_locations_geodf.append(pts_results)
 
-#tx_locations_geodf.crs = {'init' :'epsg:4326'}
-#tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_50_t1.gpkg"), driver="GPKG")
+tx_locations_geodf.crs = {'init' :'epsg:4326'}
+tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_0.gpkg"), driver="GPKG")
 #tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations.shp"))
