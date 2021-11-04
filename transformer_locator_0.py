@@ -60,13 +60,12 @@ for i, name in enumerate(file_names):
             print('sub_grid_files:', sub_grid_files)
             sub_grid_sub_grid_files = os.listdir(os.path.join(data_folder_path, name, sub_grid, sub_grid))
             print('sub_grid_sub_grid_files:', sub_grid_sub_grid_files)
-            #mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
-            #sub_grid_cons = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, "{}.shp".format(sub_grid)))
-            #print('mvs, sub_cons', len(mvs), len(sub_cons))
+            sub_grid_cons = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, "{}.shp".format(sub_grid)))
+            print('sub_cons', len(sub_grid_cons))
             pass
     pts_results.index = range(len(pts_results))
     tx_locations_geodf = tx_locations_geodf.append(pts_results)
 
-tx_locations_geodf.crs = {'init' :'epsg:4326'}
-tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_50_t1.gpkg"), driver="GPKG")
+#tx_locations_geodf.crs = {'init' :'epsg:4326'}
+#tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_50_t1.gpkg"), driver="GPKG")
 #tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations.shp"))
