@@ -6,7 +6,7 @@ from shapely.geometry import Point
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[25:27]
+file_names = file_names[27:50]
 
 # create a folder
 output_dir = 'transformers_location'
