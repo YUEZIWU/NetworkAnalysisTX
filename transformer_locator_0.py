@@ -9,7 +9,7 @@ print('start_time', start_time)
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[0:500]
+file_names = file_names[0:50]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -66,11 +66,11 @@ for i, name in enumerate(file_names):
                 # find the structures connected to that transformer
                 lvs = drop_mvs_from_finalGrid(finalGrid,mvs)
                 result['NoStructure'] = None
-                for i in result['id']:
-                    tx_id = -i-100
+                for tx_o_id in result['id']:
+                    tx_id = -tx_o_id-100
                     visited = set()
-                    dfs(visited, lvs, i)
-                    result.loc[result.id == i, 'NoStructure'] = len(visited)-1
+                    dfs(visited, lvs, tx_id)
+                    result.loc[result.id == tx_o_id, 'NoStructure'] = len(visited)-1
             else: # when mvs is empty, choose the centriod as the transformer location
                 sub_grid_cons = None
                 sub_grid_cons = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, "{}.shp".format(sub_grid)))
@@ -89,7 +89,7 @@ for i, name in enumerate(file_names):
             pass
     pts_results.index = range(len(pts_results))
     tx_locations_geodf = tx_locations_geodf.append(pts_results)
-
+    #if i%20 ==0:
     now = datetime.now()
     print(i, name, 'time:', now - start_time) # print the process steps of the script
 
