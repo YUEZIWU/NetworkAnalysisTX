@@ -4,12 +4,12 @@ import pandas as pd
 import numpy as np
 from shapely.geometry import Point
 from datetime import datetime
-start_time = datetime.now()
-print('start_time', start_time)
+now = datetime.now()
+print('start_time', now)
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[0:50]
+file_names = file_names[0:500]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -89,9 +89,9 @@ for i, name in enumerate(file_names):
             pass
     pts_results.index = range(len(pts_results))
     tx_locations_geodf = tx_locations_geodf.append(pts_results)
-    #if i%20 ==0:
-    now = datetime.now()
-    print(i, name, 'time:', now - start_time) # print the process steps of the script
+    if i%20 ==0:
+        print(i, 'time:', datetime.now() - now) # print the process steps of the script
+        now = datetime.now()
 
 tx_locations_geodf.crs = {'init' :'epsg:4326'}
 tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_0.gpkg"), driver="GPKG")
