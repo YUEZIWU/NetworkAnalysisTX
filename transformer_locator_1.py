@@ -1,11 +1,15 @@
 import re, os
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 from shapely.geometry import Point
+from datetime import datetime
+now = datetime.now()
+print('start_time', now)
 # locate to data folder
 data_folder_path = '/mnt/nfs/eguide/projects/networkAnalysis/Kenya/networkDesign_results/'
 file_names = os.listdir(data_folder_path)
-file_names = file_names[500:1000]
+file_names = file_names[500:1431]
 
 # create a folder
 output_dir = 'transformers_location'
@@ -15,10 +19,24 @@ if not os.path.exists(output_dir):
 # read the category
 cate_file = pd.read_csv('wards_summary_mvlv_w_area_type.csv')
 
+def drop_mvs_from_finalGrid(df1,df2):
+    indices = df1[df1.pt1.isin(df2.pt1) & df1.pt2.isin(df2.pt2)].index
+    df1.drop(indices, inplace=True)
+    df = df1[['pt1','pt2']]
+    return df
+
+# modified DFS to find all structures of each transformer
+def dfs(visited, graph, node):
+    if node not in visited:
+        visited.add(node)
+        neighbours = (graph.pt2[graph.pt1==node]).append(graph.pt1[graph.pt2==node])
+        for neighbour in neighbours:
+            dfs(visited, graph, neighbour)
+
 tx_locations_geodf = gpd.GeoDataFrame()
 for i, name in enumerate(file_names):
-    if i%50 ==0:
-        print(i)
+    # if i%50 ==0:
+    #     print(i) # print the process steps of the script
     pts_results = gpd.GeoDataFrame()
     ward = re.split(r'_', name)[0]
     county = re.split(r'_', name)[1]
@@ -30,23 +48,51 @@ for i, name in enumerate(file_names):
         cate = None
     for sub_grid in sub_grid_list:
         try:
-            mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
-            # get points from lines and remove duplicated ones
-            startpts = gpd.GeoSeries([Point(list(pt['geometry'].coords)[0]) for i,pt in mvs.iterrows()])
-            endpts = gpd.GeoSeries([Point(list(pt['geometry'].coords)[-1]) for i,pt in mvs.iterrows()])
-            points = startpts.append(endpts)
-            result = gpd.GeoDataFrame(points,columns=['geometry'])
-            result['id'] = mvs['pt1'].tolist() + mvs['pt2'].tolist()
-            result = result.drop_duplicates()
+            mvs = gpd.GeoDataFrame()
+            result = gpd.GeoDataFrame()
+            try:
+                mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
+                finalGrid = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "FinalGrid.shp"))
+            except:
+                pass
+            if len(mvs) > 0: # when there is mvs
+                # get points from lines and remove duplicated ones
+                startpts = gpd.GeoSeries([Point(list(pt['geometry'].coords)[0]) for i,pt in mvs.iterrows()])
+                endpts = gpd.GeoSeries([Point(list(pt['geometry'].coords)[-1]) for i,pt in mvs.iterrows()])
+                points =  startpts.append(endpts)
+                result = gpd.GeoDataFrame(points,columns=['geometry'])
+                result['id'] = mvs['pt1'].tolist() + mvs['pt2'].tolist()
+                result = result.drop_duplicates()
+                # find the structures connected to that transformer
+                lvs = drop_mvs_from_finalGrid(finalGrid,mvs)
+                result['NoStructure'] = None
+                for tx_o_id in result['id']:
+                    tx_id = -tx_o_id-100
+                    visited = set()
+                    dfs(visited, lvs, tx_id)
+                    result.loc[result.id == tx_o_id, 'NoStructure'] = len(visited)-1
+            else: # when mvs is empty, choose the centriod as the transformer location
+                sub_grid_cons = None
+                sub_grid_cons = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, "{}.shp".format(sub_grid)))
+                points = gpd.GeoSeries(Point(np.mean(sub_grid_cons['geometry'].x), np.mean(sub_grid_cons['geometry'].y)))
+                result = gpd.GeoDataFrame(points,columns=['geometry'])
+                result['id'] = 0
+                result['NoStructure'] = len(sub_grid_cons)
+            # Assign info.
             result['county'] = county
             result['ward'] = ward
             result['sub_grid'] = sub_grid
             result['area_cate'] = str(cate)
             pts_results = pts_results.append(result)
         except:
+            print('no transformer found or errors', i, name, sub_grid)
             pass
     pts_results.index = range(len(pts_results))
     tx_locations_geodf = tx_locations_geodf.append(pts_results)
+    if i%20 ==0:
+        print(i, 'time:', datetime.now() - now) # print the process steps of the script
+        now = datetime.now()
 
+tx_locations_geodf.crs = {'init' :'epsg:4326'}
 tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations_1.gpkg"), driver="GPKG")
 #tx_locations_geodf.to_file(os.path.join(output_dir, "gridmodel_tx_locations.shp"))
