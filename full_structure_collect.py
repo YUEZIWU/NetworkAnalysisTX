@@ -14,7 +14,7 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 # single file too large, break 80 wards into one output file
-step = 80
+step = 40
 sep = list(range(0,len(file_names),step))
 for sect_id, sect in enumerate(sep):
     print('sect_id',sect_id)
