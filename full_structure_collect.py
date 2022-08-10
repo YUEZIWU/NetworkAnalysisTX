@@ -13,7 +13,7 @@ output_dir = 'transformers_location'
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-# single file too large, break 80 wards into one output file
+# single file too large, break 40 wards into one output file
 step = 40
 sep = list(range(0,len(file_names),step))
 for sect_id, sect in enumerate(sep):
