@@ -73,7 +73,7 @@ for i, name in enumerate(file_names):
             result = gpd.GeoDataFrame()
             try:
                 mvs = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "MV.shp"))
-                finalGrid = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "FinalGrid.shp
+                finalGrid = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, sub_grid, "FinalGrid.shp"))
                 sub_grid_cons = gpd.read_file(os.path.join(data_folder_path, name, sub_grid, "{}.shp".format(sub_grid)))
             except:
                 pass
